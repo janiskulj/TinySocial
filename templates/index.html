@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>TinySocial</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f3f4f6;
+        color: #1f2937;
+      }
+      main {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 2rem 1rem 3rem;
+      }
+      .card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 1.25rem;
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+        margin-bottom: 1rem;
+      }
+      h1, h2, p {
+        margin-top: 0;
+      }
+      label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 0.35rem;
+      }
+      input, textarea, button {
+        width: 100%;
+        box-sizing: border-box;
+        font: inherit;
+        border-radius: 8px;
+      }
+      input, textarea {
+        padding: 0.75rem;
+        margin-bottom: 1rem;
+        border: 1px solid #d1d5db;
+      }
+      textarea {
+        min-height: 110px;
+        resize: vertical;
+      }
+      button {
+        padding: 0.85rem 1rem;
+        border: 0;
+        background: #2563eb;
+        color: #fff;
+        cursor: pointer;
+      }
+      .post-meta {
+        color: #6b7280;
+        font-size: 0.95rem;
+        margin-bottom: 0.75rem;
+      }
+      .empty-state {
+        color: #6b7280;
+        text-align: center;
+        padding: 2rem 0;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="card">
+        <h1>TinySocial</h1>
+        <p>Share a short update with everyone on the feed.</p>
+        <form method="post" action="{{ url_for('create_post') }}">
+          <label for="author">Name</label>
+          <input id="author" name="author" maxlength="40" placeholder="Your name" required>
+
+          <label for="content">What's happening?</label>
+          <textarea id="content" name="content" maxlength="280" placeholder="Share a short post" required></textarea>
+
+          <button type="submit">Post update</button>
+        </form>
+      </section>
+
+      <section>
+        <h2>Latest posts</h2>
+        {% if posts %}
+          {% for post in posts %}
+            <article class="card">
+              <p class="post-meta"><strong>{{ post.get('author', 'Anonymous') | e }}</strong> · {{ post.get('created_at_label', 'Unknown time') | e }}</p>
+              <p>{{ post.get('content', '') | e }}</p>
+            </article>
+          {% endfor %}
+        {% else %}
+          <div class="card empty-state">No posts yet. Be the first to share an update.</div>
+        {% endif %}
+      </section>
+    </main>
+  </body>
+</html>
