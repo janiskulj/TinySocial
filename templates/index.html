@@ -86,8 +86,8 @@
         {% if posts %}
           {% for post in posts %}
             <article class="card">
-              <p class="post-meta"><strong>{{ post.author }}</strong> · {{ post.created_at_label }}</p>
-              <p>{{ post.content }}</p>
+              <p class="post-meta"><strong>{{ post.get('author', 'Anonymous') | e }}</strong> · {{ post.get('created_at_label', 'Unknown time') | e }}</p>
+              <p>{{ post.get('content', '') | e }}</p>
             </article>
           {% endfor %}
         {% else %}

@@ -8,7 +8,6 @@ from tinydb import TinyDB
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
-        SECRET_KEY="dev",
         DATABASE_PATH=Path(app.instance_path) / "tinysocial.json",
     )
 
@@ -20,7 +19,7 @@ def create_app(test_config=None):
 
     def load_posts():
         with TinyDB(database_path) as db:
-            return sorted(db.all(), key=lambda post: post["created_at"], reverse=True)
+            return sorted(db.all(), key=lambda post: post.get("created_at", ""), reverse=True)
 
     @app.get("/")
     def index():
@@ -31,7 +30,7 @@ def create_app(test_config=None):
         author = request.form.get("author", "").strip()
         content = request.form.get("content", "").strip()
 
-        if author and content:
+        if 0 < len(author) <= 40 and 0 < len(content) <= 280:
             created_at = datetime.now(timezone.utc)
             with TinyDB(database_path) as db:
                 db.insert(
@@ -52,4 +51,4 @@ app = create_app()
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()

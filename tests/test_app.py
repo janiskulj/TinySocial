@@ -61,6 +61,29 @@ class TinySocialAppTests(unittest.TestCase):
         page = response.get_data(as_text=True)
         self.assertLess(page.index("Latest post"), page.index("Earlier post"))
 
+    def test_post_submission_rejects_values_longer_than_form_limits(self):
+        response = self.client.post(
+            "/posts",
+            data={"author": "A" * 41, "content": "B" * 281},
+            follow_redirects=True,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn(("A" * 41).encode(), response.data)
+
+        with TinyDB(self.db_path) as db:
+            self.assertEqual(db.all(), [])
+
+    def test_feed_handles_posts_without_created_at(self):
+        with TinyDB(self.db_path) as db:
+            db.insert({"author": "Legacy", "content": "Older schema"})
+
+        response = self.client.get("/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"Legacy", response.data)
+        self.assertIn(b"Unknown time", response.data)
+
 
 if __name__ == "__main__":
     unittest.main()
